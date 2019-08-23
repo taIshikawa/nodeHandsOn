@@ -1,0 +1,42 @@
+version: '3'
+
+#networks:
+#  bridge:
+#    driver: bridge
+
+services:
+
+  node:
+    build:
+      context: ./node
+    volumes:
+      - ./node/data:/app
+    tty: true
+    ports:
+      - "80:3000"
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      -  'MONGODB_USER=user' 
+      -  'MONGODB_PASS=pass1234'
+    volumes:
+      - 'mongodb-data:/data/db'
+    ports:
+      - '27017:27017'
+    command: mongod --smallfiles  
+  mongo-express:
+    container_name: mongo-express
+    links:
+      - 'mongodb:mongo'
+    ports:
+      - '8081:8081'
+    environment:
+      - 'ME_CONFIG_OPTIONS_EDITORTHEME=ambiance'
+      - 'ME_CONFIG_BASICAUTH_USERNAME=user'
+      - 'ME_CONFIG_BASICAUTH_PASSWORD=pass1234'
+    image: mongo-express
+
+volumes:
+  mongodb-data: {}
